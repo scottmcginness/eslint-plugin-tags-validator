@@ -16,13 +16,10 @@ In your `.eslintrc.json` (or similar):
 
 ```json
 {
-	...
   "plugins": [
-		...
     "tags-validator"
   ],
   "rules": {
-		...
     "tags-validator/must-match": "error"
   }
 }
@@ -89,7 +86,7 @@ Additionally, the plugin can allow computed tag names (which are *not* then vali
 
 ```json
 {
-    "tags-validator/must-match": ["error", { ..., "allowComputed": "true" }]
+    "tags-validator/must-match": ["error", { "allowComputed": "true" }]
 }
 ```
 
