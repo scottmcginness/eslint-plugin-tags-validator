@@ -1,0 +1,12 @@
+{
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "files.exclude": {
+    "node_modules/": true
+  },
+  "workbench.colorCustomizations": {
+    "editorInfo.foreground": "#268ad220"
+  }
+}

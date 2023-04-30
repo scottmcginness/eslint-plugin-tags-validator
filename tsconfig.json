@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "allowSyntheticDefaultImports": false,
+    "resolveJsonModule": false,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "noImplicitAny": true,
+    "baseUrl": "./",
+    "target": "esnext",
+    "module": "ESNext",
+    "moduleResolution": "node"
+  },
+  "include": [
+    "**/*.*"
+  ]
+}
