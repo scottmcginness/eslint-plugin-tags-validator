@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-tags-validator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Validates tags applied to Mocha tests, primarily as defined using @cypress/grep",
   "license": "MIT",
   "repository": {
@@ -34,6 +34,7 @@
     "prepack": "npm run lint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "types": "types.d.ts",
   "dependencies": {
     "autocorrect": "^1.2.0"
   },
