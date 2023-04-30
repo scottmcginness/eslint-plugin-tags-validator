@@ -5,8 +5,19 @@
   "license": "MIT",
   "author": "Scott McGinness",
   "main": "index.js",
+  "files": [
+    "LICENSE.txt",
+    "README.md",
+    "index.js",
+    "types.d.ts",
+    "lib/**",
+    "rules/**"
+  ],
   "scripts": {
     "format:pkg": "format-package -w",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepack": "npm run lint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
