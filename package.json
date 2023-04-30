@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-tags-validator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Validates tags applied to Mocha tests, primarily as defined using @cypress/grep",
   "license": "MIT",
   "repository": {
@@ -8,6 +8,16 @@
     "url": "https://github.com/scottmcginness/eslint-plugin-tags-validator.git"
   },
   "author": "Scott McGinness",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "eslintplugin",
+    "mocha",
+    "cypress",
+    "grep",
+    "tag",
+    "filter"
+  ],
   "main": "index.js",
   "files": [
     "LICENSE.txt",
