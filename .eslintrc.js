@@ -2,12 +2,14 @@ module.exports = {
   $schema: 'https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/eslintrc.json',
   plugins: [
     'node',
-    'eslint-plugin'
+    'eslint-plugin',
+    'mocha'
   ],
   extends: [
     'airbnb-base',
     'eslint:recommended',
     'plugin:eslint-plugin/recommended',
+    'plugin:mocha/recommended',
     'plugin:node/recommended',
   ],
   parserOptions: {
@@ -21,6 +23,7 @@ module.exports = {
     'linebreak-style': 'off',
     'max-len': 'off',
     'comma-dangle': 'off',
-    'no-else-return': 'off'
+    'no-else-return': 'off',
+    'mocha/no-mocha-arrows': 'off',
   }
 };
