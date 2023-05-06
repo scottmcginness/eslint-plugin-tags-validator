@@ -54,6 +54,7 @@
     "eslint-plugin-node": "^11.1.0",
     "format-package": "^7.0.0",
     "mocha": "^10.2.0",
+    "proxyquire": "^2.1.3",
     "sinon": "^15.0.4",
     "sinon-chai": "^3.7.0",
     "unit-test-sentinel": "^1.0.1"

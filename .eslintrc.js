@@ -10,7 +10,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:eslint-plugin/recommended',
     'plugin:mocha/recommended',
-    'plugin:node/recommended',
+    'plugin:node/recommended'
   ],
   parserOptions: {
     ecmaVersion: 2022
@@ -22,8 +22,8 @@ module.exports = {
   rules: {
     'linebreak-style': 'off',
     'max-len': 'off',
-    'comma-dangle': 'off',
+    'comma-dangle': ['error', 'never'],
     'no-else-return': 'off',
-    'mocha/no-mocha-arrows': 'off',
+    'mocha/no-mocha-arrows': 'off'
   }
 };
