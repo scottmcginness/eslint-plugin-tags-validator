@@ -1,4 +1,5 @@
 const proxyquire = require('proxyquire');
+const makeRunners = require('./make-runners');
 
 const rule = proxyquire('../../rules/must-match', {
   '../lib/memoize': (/** @type {any} */ func) => func,
@@ -6,7 +7,8 @@ const rule = proxyquire('../../rules/must-match', {
     './memoize': (/** @type {any} */ func) => func
   })
 });
-const { run, runExpectingException } = require('./make-runners')('must-match', rule);
+
+const { run, runExpectingException } = makeRunners('must-match', rule);
 
 runExpectingException([{
   name: 'Empty array of allowed values should fail with an exception',
