@@ -15,6 +15,7 @@ declare namespace ESLint {
   namespace Rule {
     type RuleModule  = ESLintModule.Rule.RuleModule;
     type RuleContext = ESLintModule.Rule.RuleContext;
+    type NodeParentExtension = ESLintModule.Rule.NodeParentExtension;
   }
 }
 
