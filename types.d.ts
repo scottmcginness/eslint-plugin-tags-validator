@@ -18,4 +18,12 @@ declare namespace ESLint {
   }
 }
 
+declare module 'eslint' {
+  namespace RuleTester {
+      interface TestCaseError {
+        messages?: Record<string, string>
+      }
+  }
+}
+
 export as namespace TV;

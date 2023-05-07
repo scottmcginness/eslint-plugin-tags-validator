@@ -27,7 +27,7 @@ const reportSingleTag = (node, context, using, autocorrect, insideArray) => {
     if (node.value === '') {
       context.report({
         node,
-        messageId: messageIds.emptyString,
+        messageId: messageIds.emptyString
       });
     } else {
       // We have to go through the whole array to check if there is a match.
@@ -50,7 +50,7 @@ const reportSingleTag = (node, context, using, autocorrect, insideArray) => {
   } else if (node.type === 'TemplateLiteral') {
     // TODO: make this an option; to allow template literals.
     // Do nothing. It might be correct, we just can't tell here.
-  } else {
+  } else if (!shouldAllowComputed(context)) {
     context.report({
       node,
       messageId: insideArray ? messageIds.nonLiteralInside : messageIds.nonLiteralOutside
@@ -76,6 +76,9 @@ const reportTagsValue = (node, context, using, autocorrect) => {
         reportSingleTag(e, context, using, autocorrect, true);
       });
     }
+  } else if (node.type === 'TemplateLiteral') {
+    // TODO: make this an option; to allow template literals.
+    // Do nothing. It might be correct, we just can't tell here.
   } else if (!shouldAllowComputed(context)) {
     context.report({ node, messageId: messageIds.nonLiteralOutside });
   }
@@ -111,8 +114,7 @@ const mustMatch = {
                 }
               },
               allowComputed: {
-                type: 'boolean',
-                default: false
+                type: 'boolean'
               }
             },
             additionalProperties: false
@@ -124,8 +126,7 @@ const mustMatch = {
                 type: 'string'
               },
               allowComputed: {
-                type: 'boolean',
-                default: false
+                type: 'boolean'
               }
             },
             additionalProperties: false
@@ -136,6 +137,11 @@ const mustMatch = {
   },
   create(context) {
     const [allowedValues, using] = readAllowedValues(context);
+
+    if (allowedValues.length === 0) {
+      throw new Error(`At least one tag must be allowed; found none (using ${using}).`);
+    }
+
     const autocorrect = autocorrectCreator({ words: allowedValues });
 
     return {
