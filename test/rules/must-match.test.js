@@ -66,6 +66,9 @@ runExpectingException([{
             name: 'Ignored on the standard Mocha calls (many arguments)',
             code: `${method}('', 1, 2, 3, function() {})`
           }, {
+            name: 'Ignored when the second argument is not an object',
+            code: `${method}('', item, function() {})`
+          }, {
             name: 'Ignored when there is no tags property',
             code: `${method}('', {}, function() {})`
           }, {
@@ -163,12 +166,20 @@ runExpectingException([{
               endColumn: 17 + shift
             }]
           }, {
-            name: 'Some other object as defined tags are not allowed',
+            name: 'Some other object as defined tag is not allowed',
             code: `${method}('', { tags: {} }, function() {})`,
             errors: [{
               message: 'Invalid tags; must be a literal string or an array of strings',
               column: 14 + shift,
               endColumn: 16 + shift
+            }]
+          }, {
+            name: 'Some other literal as defined tag is not allowed',
+            code: `${method}('', { tags: 1 }, function() {})`,
+            errors: [{
+              message: 'Invalid tags; must be a literal string or an array of strings',
+              column: 14 + shift,
+              endColumn: 15 + shift
             }]
           }, {
             name: 'Some non strings inside the tags array are not allowed',
@@ -189,6 +200,14 @@ runExpectingException([{
               message: 'Invalid tags; must be a literal string or an array of strings',
               column: 14 + shift,
               endColumn: 25 + shift
+            }]
+          }, {
+            name: 'Computed tags are not allowed inside the array by default',
+            code: `${method}('', { tags: [tagSource()] }, function() {})`,
+            errors: [{
+              message: 'Invalid tag; must be a literal string',
+              column: 15 + shift,
+              endColumn: 26 + shift
             }]
           }]
         });
