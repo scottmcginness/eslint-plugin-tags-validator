@@ -42,6 +42,17 @@ ruleTester.run('top-level', rule, {
       }, {
         name: `Ignored on nested ${method}`,
         code: `describe('', { tags: [] }, function() { ${method}('', function() {}) })`
+      }, {
+        name: `Ignored on doubly nested ${method}`,
+        code: dedent`
+          describe('', { tags: [] }, function() {
+            describe('', function() {
+              ${method}('', function() {})
+            })
+          })`
+      }, {
+        name: 'Ignored on more than 3 arguments',
+        code: "describe('', 1, 2, 3, function() {})"
       }],
       invalid: [{
         name: `Top level ${method} requires three arguments (none supplied)`,
