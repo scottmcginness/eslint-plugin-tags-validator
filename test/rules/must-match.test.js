@@ -57,6 +57,15 @@ runExpectingException([{
             name: 'Ignored on the standard Mocha calls',
             code: `${method}('', function() {})`
           }, {
+            name: 'Ignored on the standard Mocha calls (no arguments)',
+            code: `${method}()`
+          }, {
+            name: 'Ignored on the standard Mocha calls (1 argument)',
+            code: `${method}('')`
+          }, {
+            name: 'Ignored on the standard Mocha calls (many arguments)',
+            code: `${method}('', 1, 2, 3, function() {})`
+          }, {
             name: 'Ignored when there is no tags property',
             code: `${method}('', {}, function() {})`
           }, {

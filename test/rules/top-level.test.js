@@ -44,7 +44,23 @@ ruleTester.run('top-level', rule, {
         code: `describe('', { tags: [] }, function() { ${method}('', function() {}) })`
       }],
       invalid: [{
-        name: `Top level ${method} requires three arguments`,
+        name: `Top level ${method} requires three arguments (none supplied)`,
+        code: `${method}()`,
+        errors: [{
+          message: 'Top level Mocha method block must have 3 arguments (to supply tags at 2nd argument)',
+          column: 1,
+          endColumn: 1 + shift
+        }]
+      }, {
+        name: `Top level ${method} requires three arguments (only 1 supplied)`,
+        code: `${method}('')`,
+        errors: [{
+          message: 'Top level Mocha method block must have 3 arguments (to supply tags at 2nd argument)',
+          column: 1,
+          endColumn: 1 + shift
+        }]
+      }, {
+        name: `Top level ${method} requires three arguments (only 2 supplied)`,
         code: `${method}('', function() {})`,
         errors: [{
           message: 'Top level Mocha method block must have 3 arguments (to supply tags at 2nd argument)',
