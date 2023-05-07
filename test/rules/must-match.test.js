@@ -260,3 +260,22 @@ runExpectingException([{
         });
       });
   });
+
+run(null, 'default', {
+  valid: [{
+    name: 'Default vs one defined as a string that matches',
+    code: "describe('', { tags: '@fast' }, function() {})"
+  }, {
+    name: 'Default vs one defined that matches',
+    code: "describe('', { tags: ['@fast'] }, function() {})"
+  }],
+  invalid: [{
+    name: 'Default vs single unmatched',
+    code: "describe('', { tags: '@another' }, function() {})",
+    errors: [{
+      message: "Invalid tag '@another' (using default list). Did you mean '@smoke'?",
+      column: 22,
+      endColumn: 32
+    }]
+  }]
+});

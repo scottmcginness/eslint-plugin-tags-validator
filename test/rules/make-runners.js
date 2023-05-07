@@ -44,7 +44,7 @@ const makeRunners = (ruleName, rule) => {
         code: t.code,
         name: t.name,
         only: t.only,
-        options: [option]
+        options: option ? [option] : []
       })),
       invalid: tests.invalid?.map((t) => ({
         code: t.code,
@@ -55,7 +55,7 @@ const makeRunners = (ruleName, rule) => {
           endColumn: e.endColumn,
           message: e.message ?? e.messages[optionName]
         })),
-        options: [option]
+        options: option ? [option] : []
       }))
     });
   };
