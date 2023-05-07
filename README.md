@@ -20,14 +20,17 @@ In your `.eslintrc.json` (or similar):
     "tags-validator"
   ],
   "rules": {
-    "tags-validator/must-match": "error"
+    "tags-validator/must-match": "error",
+    "tags-validator/top-level": "error"
   }
 }
 ```
 
 ## Configurations
 
-There are three modes in which the plugin can run.
+The `top-level` rule, when enabled, will require that tags are defined on the top-level Mocha block in every file. This is usually the beginning `describe`.
+
+The `must-match` rule will then validate that those tags are restricted to a set of known values. There are three modes in which this rule can run:
 
 ### 1. Default
 
