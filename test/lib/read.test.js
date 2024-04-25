@@ -61,20 +61,27 @@ describe('read', () => {
 
       it('throws an exception', () => {
         expect(() => readAllowedValues(contextUt)).to.throw(
-          "Option must be either 'allowedValues' or 'markdownFile'."
+          "Option must be either 'allowedValues', 'markdownFile' or 'packageJson'."
         );
       });
     });
 
     context('when given allowedValues', () => {
       beforeEach(() => {
-        contextUt.options = [{ allowedValues: ф.allowedList }];
+        contextUt.options = [{ allowedValues: ['@fast', '@slow'] }];
       });
 
       it('returns those allowed values', () => {
         const [values, using] = readAllowedValues(contextUt);
         expect(using).to.equal('allowed values');
-        expect(values).to.equal(ф.allowedList);
+        expect(values).to.deep.equal(['@fast', '@slow']);
+      });
+
+      it('returns those allowed values with prepended @-sign, no trailing whitespace and no duplicates', () => {
+        contextUt.options[0].allowedValues.push('fast   ', 'dup', '@dup');
+        const [values, using] = readAllowedValues(contextUt);
+        expect(using).to.equal('allowed values');
+        expect(values).to.deep.equal(['@fast', '@slow', '@dup']);
       });
     });
 
@@ -104,10 +111,12 @@ describe('read', () => {
             • @third  // some other comment, which will be ignored
             • @fourth
           + @fifth (more commentary)
+          + @fifth (this is a duplicate)
+          - @fifth2 2 is a number on the end
           
           
           Thiis is a footer`,
-        expected: ['@first', '@second', '@third', '@fourth', '@fifth']
+        expected: ['@first', '@second', '@third', '@fourth', '@fifth', '@fifth2']
       }]
         .forEach(({ name, file, expected }) => {
           it(`returns a variety of tags from the given file (${name})`, () => {
@@ -120,6 +129,147 @@ describe('read', () => {
             expect(fsReadStub).to.have.been.calledWith(ф.markdownFilePath, 'utf8');
           });
         });
+    });
+
+    context('when given packageJson', () => {
+      beforeEach(() => {
+        contextUt.options = [{ packageJson: 'packageTags' }];
+      });
+
+      context('when the package.json cannot be read', () => {
+        beforeEach(() => {
+          fsReadStub.throws('Unable to read package');
+        });
+
+        it('throws an error', () => {
+          expect(() => readAllowedValues(contextUt)).to.throw(
+            'Could not read package.json file for tag values.'
+          );
+        });
+      });
+
+      context('when the package.json cannot be read as JSON', () => {
+        beforeEach(() => {
+          fsReadStub.returns('Bad package');
+        });
+
+        it('throws an error', () => {
+          expect(() => readAllowedValues(contextUt)).to.throw(
+            'Could not read package.json file for tag values.'
+          );
+        });
+      });
+
+      context('when the package.json does not have the given property', () => {
+        beforeEach(() => {
+          fsReadStub.returns(JSON.stringify({}));
+        });
+
+        it('throws an error', () => {
+          expect(() => readAllowedValues(contextUt)).to.throw(
+            "Did not find property 'packageTags' in package.json file."
+          );
+        });
+      });
+
+      context('when the package.json has the given property', () => {
+        it('throws an error if they are a number', () => {
+          fsReadStub.returns(JSON.stringify({ packageTags: 123 }));
+
+          expect(() => readAllowedValues(contextUt)).to.throw(
+            "Property 'packageTags' in package.json file was neither an array nor an object of arrays."
+          );
+        });
+
+        it('throws an error if they are a string', () => {
+          fsReadStub.returns(JSON.stringify({ packageTags: 'abc' }));
+
+          expect(() => readAllowedValues(contextUt)).to.throw(
+            "Property 'packageTags' in package.json file was neither an array nor an object of arrays."
+          );
+        });
+
+        it('throws an error if they are a boolean', () => {
+          fsReadStub.returns(JSON.stringify({ packageTags: true }));
+
+          expect(() => readAllowedValues(contextUt)).to.throw(
+            "Property 'packageTags' in package.json file was neither an array nor an object of arrays."
+          );
+        });
+
+        it('returns the list if they are an array of names', () => {
+          fsReadStub.returns(JSON.stringify({ packageTags: ['@Fast'] }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast']);
+        });
+
+        it('returns the list if they are an array of names with duplicates', () => {
+          fsReadStub.returns(JSON.stringify({ packageTags: ['@Fast', '@Fast'] }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast']);
+        });
+
+        it('returns the list with @-sign prepended if they are an array of names, some of which do not have the @-sign', () => {
+          fsReadStub.returns(JSON.stringify({ packageTags: ['@Fast', 'Slow'] }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast', '@Slow']);
+        });
+
+        it('returns the leaves of the object tree if they are an object', () => {
+          const packageTags = {
+            Blue: ['@Fast', '@Slow'],
+            Red: ['@Easy', '@Hard'],
+            Green: ['@Good', '@Bad'],
+            Orange: ['@Manual', '@Perf'],
+            Ignored: {}
+          };
+
+          fsReadStub.returns(JSON.stringify({ packageTags }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast', '@Slow', '@Easy', '@Hard', '@Good', '@Bad', '@Manual', '@Perf']);
+        });
+
+        it('returns the leaves of the object tree if they are an object, allowing for duplicates', () => {
+          const packageTags = {
+            Blue: ['@Fast', '@Slow'],
+            Red: ['@Easy', '@Hard'],
+            Green: ['@Good', '@Bad'],
+            Orange: ['@Manual', '@Perf', '@Fast', '@Easy'],
+            Ignored: {}
+          };
+
+          fsReadStub.returns(JSON.stringify({ packageTags }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast', '@Slow', '@Easy', '@Hard', '@Good', '@Bad', '@Manual', '@Perf']);
+        });
+
+        it('returns the leaves of the object tree, with @-sign prepended, if they are an object, allowing for some that do not have the @-sign', () => {
+          const packageTags = {
+            Blue: ['@Fast', '@Slow'],
+            Red: ['@Easy', 'Hard'],
+            Green: ['@Good', 'Bad'],
+            Orange: ['@Manual', '@Perf', 'Fast', '@Easy'],
+            Ignored: {}
+          };
+
+          fsReadStub.returns(JSON.stringify({ packageTags }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast', '@Slow', '@Easy', '@Hard', '@Good', '@Bad', '@Manual', '@Perf']);
+        });
+
+        it('returns a using value containing the given package property', () => {
+          fsReadStub.returns(JSON.stringify({ packageTags: ['@Fast'] }));
+
+          const [, using] = readAllowedValues(contextUt);
+          expect(using).to.equal("package 'packageTags'");
+        });
+      });
     });
   });
 });

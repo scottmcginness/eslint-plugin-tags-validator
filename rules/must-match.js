@@ -130,6 +130,18 @@ const mustMatch = {
               }
             },
             additionalProperties: false
+          },
+          {
+            type: 'object',
+            properties: {
+              packageJson: {
+                type: 'string'
+              },
+              allowComputed: {
+                type: 'boolean'
+              }
+            },
+            additionalProperties: false
           }
         ]
       }
