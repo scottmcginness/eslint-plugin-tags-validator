@@ -271,5 +271,17 @@ describe('read', () => {
         });
       });
     });
+
+    context('when given pattern', () => {
+      beforeEach(() => {
+        contextUt.options = [{ pattern: 'fa(st|ntastic|bulous|iling)' }];
+      });
+
+      it("returns the RegExp'd pattern with a 'pattern' using message", () => {
+        const [values, using] = readAllowedValues(contextUt);
+        expect(using).to.equal("pattern 'fa(st|ntastic|bulous|iling)'");
+        expect(values).to.deep.equal(/fa(st|ntastic|bulous|iling)/);
+      });
+    });
   });
 });

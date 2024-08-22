@@ -22,6 +22,10 @@ runExpectingException([{
   name: 'Empty markdown file should fail with an exception',
   option: { markdownFile: './test/rules/files/empty.md' },
   message: "Error while loading rule 'must-match': At least one tag must be allowed; found none (using markdown file)."
+}, {
+  name: 'Bad pattern should fail with an exception',
+  option: { pattern: '\this is (invalid[regex' },
+  message: /Error while loading rule 'must-match': Invalid regular expression: .*/
 }]);
 
 [{
@@ -34,6 +38,11 @@ runExpectingException([{
   singleTag: { markdownFile: './test/rules/files/single-tag.md' },
   multipleTags: { markdownFile: './test/rules/files/multiple-tags.md' },
   withComputed: { markdownFile: './test/rules/files/single-tag.md', allowComputed: true }
+}, {
+  name: 'pattern',
+  singleTag: { pattern: '@f[i]rst' },
+  multipleTags: { pattern: '@(first|second)' },
+  withComputed: { pattern: '@f[i]rst', allowComputed: true }
 }]
   .forEach((optionSet) => {
     [
@@ -93,7 +102,8 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@f[i]rst')."
               },
               column: 14 + shift,
               endColumn: 24 + shift
@@ -104,7 +114,8 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@f[i]rst')."
               },
               column: 15 + shift,
               endColumn: 25 + shift
@@ -115,7 +126,8 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@f[i]rst')."
               },
               column: 15 + shift,
               endColumn: 25 + shift
@@ -126,7 +138,8 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@f[i]rst')."
               },
               column: 25 + shift,
               endColumn: 35 + shift
@@ -137,14 +150,16 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@bad' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@bad' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@bad' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@bad' (using pattern '@f[i]rst')."
               },
               column: 15 + shift,
               endColumn: 21 + shift
             }, {
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@f[i]rst')."
               },
               column: 33 + shift,
               endColumn: 43 + shift
@@ -232,7 +247,8 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@(first|second)')."
               },
               column: 14 + shift,
               endColumn: 24 + shift
@@ -243,7 +259,8 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@(first|second)')."
               },
               column: 15 + shift,
               endColumn: 25 + shift
@@ -254,21 +271,24 @@ runExpectingException([{
             errors: [{
               messages: {
                 allowedValues: "Invalid tag '@another' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@another' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@another' (using pattern '@(first|second)')."
               },
               column: 15 + shift,
               endColumn: 25 + shift
             }, {
               messages: {
                 allowedValues: "Invalid tag '@bad' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@bad' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@bad' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@bad' (using pattern '@(first|second)')."
               },
               column: 27 + shift,
               endColumn: 33 + shift
             }, {
               messages: {
                 allowedValues: "Invalid tag '@worse' (using allowed values). Did you mean '@first'?",
-                markdownFile: "Invalid tag '@worse' (using markdown file). Did you mean '@first'?"
+                markdownFile: "Invalid tag '@worse' (using markdown file). Did you mean '@first'?",
+                pattern: "Invalid tag '@worse' (using pattern '@(first|second)')."
               },
               column: 35 + shift,
               endColumn: 43 + shift
@@ -302,6 +322,22 @@ run(null, 'default', {
     code: "describe('', { tags: '@another' }, function() {})",
     errors: [{
       message: "Invalid tag '@another' (using default list). Did you mean '@smoke'?",
+      column: 22,
+      endColumn: 32
+    }]
+  }]
+});
+
+run({ pattern: '(test|how|long|this|pattern|should|be|before|we|middle|truncate|it|now|this|is|too|much)' }, 'pattern is trimmed when error occurs', {
+  valid: [{
+    name: 'Pattern matches, no message at all',
+    code: "describe('', { tags: 'test' }, function() {})"
+  }],
+  invalid: [{
+    name: 'trimmed pattern',
+    code: "describe('', { tags: '@another' }, function() {})",
+    errors: [{
+      message: "Invalid tag '@another' (using pattern '(test|how|long|this|patte…|it|now|this|is|too|much)').",
       column: 22,
       endColumn: 32
     }]
