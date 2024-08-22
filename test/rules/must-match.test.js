@@ -17,7 +17,7 @@ runExpectingException([{
 }, {
   name: 'Missing markdown file should fail with an exception',
   option: { markdownFile: 'doesnt-exist' },
-  message: "Error while loading rule 'must-match': ENOENT: no such file or directory, open 'doesnt-exist'"
+  message: /Error while loading rule 'must-match': ENOENT: no such file or directory, open '[^']+doesnt-exist'/
 }, {
   name: 'Empty markdown file should fail with an exception',
   option: { markdownFile: './test/rules/files/empty.md' },

@@ -77,11 +77,27 @@ describe('read', () => {
         expect(values).to.deep.equal(['@fast', '@slow']);
       });
 
-      it('returns those allowed values with prepended @-sign, no trailing whitespace and no duplicates', () => {
+      it('returns those allowed values with prepended @-sign (by default), no trailing whitespace and no duplicates', () => {
         contextUt.options[0].allowedValues.push('fast   ', 'dup', '@dup');
         const [values, using] = readAllowedValues(contextUt);
         expect(using).to.equal('allowed values');
         expect(values).to.deep.equal(['@fast', '@slow', '@dup']);
+      });
+
+      it('returns those allowed values with prepended @-sign (when configured true), no trailing whitespace and no duplicates', () => {
+        contextUt.options[0].prependAtSign = true;
+        contextUt.options[0].allowedValues.push('fast   ', 'dup', '@dup');
+        const [values, using] = readAllowedValues(contextUt);
+        expect(using).to.equal('allowed values');
+        expect(values).to.deep.equal(['@fast', '@slow', '@dup']);
+      });
+
+      it('returns those allowed values with prepended @-sign (when configured false), no trailing whitespace and no duplicates', () => {
+        contextUt.options[0].prependAtSign = false;
+        contextUt.options[0].allowedValues.push('fast   ', 'dup', '@dup');
+        const [values, using] = readAllowedValues(contextUt);
+        expect(using).to.equal('allowed values');
+        expect(values).to.deep.equal(['@fast', '@slow', 'fast', 'dup', '@dup']);
       });
     });
 
@@ -211,11 +227,29 @@ describe('read', () => {
           expect(values).to.deep.equal(['@Fast']);
         });
 
-        it('returns the list with @-sign prepended if they are an array of names, some of which do not have the @-sign', () => {
+        it('returns the list with @-sign prepended if they are an array of names, some of which do not have the @-sign (by default)', () => {
           fsReadStub.returns(JSON.stringify({ packageTags: ['@Fast', 'Slow'] }));
 
           const [values] = readAllowedValues(contextUt);
           expect(values).to.deep.equal(['@Fast', '@Slow']);
+        });
+
+        it('returns the list with @-sign prepended (when configured true) if they are an array of names, some of which do not have the @-sign', () => {
+          contextUt.options[0].prependAtSign = true;
+
+          fsReadStub.returns(JSON.stringify({ packageTags: ['@Fast', 'Slow'] }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast', '@Slow']);
+        });
+
+        it('returns the list, as given, without @-sign prepended (when configured false) if they are an array of names', () => {
+          contextUt.options[0].prependAtSign = false;
+
+          fsReadStub.returns(JSON.stringify({ packageTags: ['@Fast', 'Slow'] }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast', 'Slow']);
         });
 
         it('returns the leaves of the object tree if they are an object', () => {
@@ -248,7 +282,7 @@ describe('read', () => {
           expect(values).to.deep.equal(['@Fast', '@Slow', '@Easy', '@Hard', '@Good', '@Bad', '@Manual', '@Perf']);
         });
 
-        it('returns the leaves of the object tree, with @-sign prepended, if they are an object, allowing for some that do not have the @-sign', () => {
+        it('returns the leaves of the object tree, with @-sign prepended, if they are an object, allowing for some that do not have the @-sign (by default)', () => {
           const packageTags = {
             Blue: ['@Fast', '@Slow'],
             Red: ['@Easy', 'Hard'],
@@ -261,6 +295,40 @@ describe('read', () => {
 
           const [values] = readAllowedValues(contextUt);
           expect(values).to.deep.equal(['@Fast', '@Slow', '@Easy', '@Hard', '@Good', '@Bad', '@Manual', '@Perf']);
+        });
+
+        it('returns the leaves of the object tree, with @-sign prepended (when configured true), if they are an object, allowing for some that do not have the @-sign', () => {
+          contextUt.options[0].prependAtSign = true;
+
+          const packageTags = {
+            Blue: ['@Fast', '@Slow'],
+            Red: ['@Easy', 'Hard'],
+            Green: ['@Good', 'Bad'],
+            Orange: ['@Manual', '@Perf', 'Fast', '@Easy'],
+            Ignored: {}
+          };
+
+          fsReadStub.returns(JSON.stringify({ packageTags }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['@Fast', '@Slow', '@Easy', '@Hard', '@Good', '@Bad', '@Manual', '@Perf']);
+        });
+
+        it('returns the leaves of the object tree, as given without @-sign prepended (when configured false), if they are an object', () => {
+          contextUt.options[0].prependAtSign = false;
+
+          const packageTags = {
+            Blue: ['Fast', 'Slow'],
+            Red: ['@Easy', 'Hard'],
+            Green: ['@Good', 'Bad'],
+            Orange: ['@Manual', '@Perf', 'Fast', '@Easy'],
+            Ignored: {}
+          };
+
+          fsReadStub.returns(JSON.stringify({ packageTags }));
+
+          const [values] = readAllowedValues(contextUt);
+          expect(values).to.deep.equal(['Fast', 'Slow', '@Easy', 'Hard', '@Good', 'Bad', '@Manual', '@Perf']);
         });
 
         it('returns a using value containing the given package property', () => {
