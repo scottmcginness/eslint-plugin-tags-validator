@@ -171,7 +171,6 @@ const mustMatch = {
             type: 'object',
             properties: {
               pattern: {
-                type: 'string'
               },
               allowComputed: {
                 type: 'boolean'
