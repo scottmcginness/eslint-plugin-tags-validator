@@ -133,6 +133,9 @@ const mustMatch = {
               },
               allowComputed: {
                 type: 'boolean'
+              },
+              prependAtSign: {
+                type: 'boolean'
               }
             },
             additionalProperties: false
@@ -156,6 +159,9 @@ const mustMatch = {
                 type: 'string'
               },
               allowComputed: {
+                type: 'boolean'
+              },
+              prependAtSign: {
                 type: 'boolean'
               }
             },

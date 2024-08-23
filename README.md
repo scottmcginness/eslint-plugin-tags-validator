@@ -85,7 +85,8 @@ will allow tags `@first`, `@second`, `@third`, etc. throughout the project.
 
 ### Common options
 
-Additionally, the plugin can allow computed tag names (which are *not* then validated at all). This is in case some of your tags are not literals:
+#### `allowComputed`
+The plugin can allow computed tag names (which are *not* then validated at all). This is in case some of your tags are not literals:
 
 ```json
 {
@@ -95,3 +96,19 @@ Additionally, the plugin can allow computed tag names (which are *not* then vali
 
 This is *only* applicable when using either `"allowedValues"` or `"markdownFile"`.
 
+#### `prependAtSign`
+The plugin defaults to prepending the `@`-sign in front of any tags defined in `"allowedValues"` or taken from `package.json`.
+
+This is so that you don't have to remember to do this in the rule definition, but the tags in your source still require them.
+
+To prevent (i.e. loosen) this behaviour, use:
+
+```json
+{
+    "tags-validator/must-match": ["error", { "prependAtSign": false }]
+}
+```
+
+which will mean any tags you define in your rules should match _exactly_ with the tags in your source.
+
+Note that `"markdownFile"` will still require the `@`-sign, because of how it matches tags in the first place. So you will get an error if this configuration is applied in this case.
